@@ -14,7 +14,7 @@ lessons_df = pd.read_csv('https://docs.google.com/spreadsheets/d/e/2PACX-1vT42k3
 lesson_number = st.selectbox('Choose a lesson', lessons_df['Lesson Number'].unique())
 
 # Fetch the prompt text
-prompt_text = requests.get('https://raw.githubusercontent.com/jamesrothmann/bookreader/main/prompt_text2.txt').text
+prompt_text = requests.get('https://raw.githubusercontent.com/jamesrothmann/aibooktutor/main/prompt.txt').text
 
 # Get the lesson material for the selected lesson
 lesson_material = lessons_df.loc[lessons_df['Lesson Number'] == lesson_number, 'Lesson Material'].values[0]
