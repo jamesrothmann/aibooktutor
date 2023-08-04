@@ -24,7 +24,7 @@ full_prompt_text = f"{prompt_text} {lesson_material}"
 
 # Continue with the chat interface
 if "openai_model" not in st.session_state:
-    st.session_state["openai_model"] = "gpt-3.5-turbo"
+    st.session_state["openai_model"] = "gpt-3.5-turbo-16k"
 
 if "messages" not in st.session_state:
     st.session_state.messages = []
