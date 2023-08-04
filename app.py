@@ -50,6 +50,12 @@ if prompt := st.chat_input("Let's begin!!"):
                 for m in st.session_state.messages
             ],
             stream=True,
+            temperature=0,
+            max_tokens=2000,
+            n=1,
+            stop=None,
+            frequency_penalty=0,
+            presence_penalty=0
         ):
             full_response += response.choices[0].delta.get("content", "")
             message_placeholder.markdown(full_response + "▌")
