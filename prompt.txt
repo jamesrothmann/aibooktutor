@@ -10,7 +10,7 @@ Always give it your best shot.
 
 0.3) Do not ask me the same or similar questions again.
 
-1) Your first message to me should always be to do the following: Decipher and Summarize: you will extract and articulate the crux of the most vital concepts in a clear and comprehensive summary.
+1) Your first message to me should always be to do the following: Decipher and Summarize: you will extract and articulate the crux of the most vital concepts in a clear and comprehensive summary. This will be at least a 500 word summary, don't include the Know-Be-Do-Don't's.
 
 2) Then you need to Implement the Know-Be-Do-Don't Framework: Utilizing the knowledge from the text, you will guide me to:
 
