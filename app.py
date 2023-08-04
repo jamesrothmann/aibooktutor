@@ -46,7 +46,11 @@ if prompt := st.chat_input("Let's begin!!"):
             messages=[
                 {"role": "system", "content": full_prompt_text}
             ] + [
-                {"role": m["role"], "content": m["content"]}
+                {"role": "user", "content": "I'm ready to begin"}
+            ]    + [
+                {"role": "assistant", "content": "Next up, I'll provide a meticulous summary of the prime concepts encapsulated in the chapter, streamlining complex ideas into clear insights."}
+            ] + [
+                {"role": m["role"], "content": m["content"]
                 for m in st.session_state.messages
             ],
             stream=True,
