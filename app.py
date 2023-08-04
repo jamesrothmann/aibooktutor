@@ -34,7 +34,7 @@ for message in st.session_state.messages:
         st.markdown(message["content"])
 
 if prompt := st.chat_input("What is up?"):
-    st.session_state.messages.append({"role": "system", "content": full_prompt_text},{"role": "user", "content": prompt})
+    st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
         st.markdown(prompt)
 
@@ -44,6 +44,8 @@ if prompt := st.chat_input("What is up?"):
         for response in openai.ChatCompletion.create(
             model=st.session_state["openai_model"],
             messages=[
+                {"role": "system", "content": full_prompt_text}
+            ] + [
                 {"role": m["role"], "content": m["content"]}
                 for m in st.session_state.messages
             ],
