@@ -10,6 +10,21 @@ openai.api_key = st.secrets["OPENAI_API_KEY"]
 # Load the lessons from the CSV
 lessons_df = pd.read_csv('https://docs.google.com/spreadsheets/d/e/2PACX-1vT42k3EGPUsfJQ4FWqqwRjMY6KsUm6lRicOVMJ9AmaaEzLL99CDRRYg4tpaRdfoz_biAIvkUnv8v9dC/pub?gid=0&single=true&output=csv')
 
+# 1. Add the Authentication Sidebar
+email = st.sidebar.text_input("Enter your email:")
+auth_code = st.sidebar.text_input("Enter your authentication code:", type="password")
+
+# 3. Validate the Authentication Code
+authenticated = auth_code in st.secrets.get("VALID_AUTH_CODES", [])
+
+# 2. Limit the Lessons Dropdown
+if not authenticated:
+    lessons_available = lessons_df['Lesson Number'].unique()[:2]  # Show only first 2 lessons
+else:
+    lessons_available = lessons_df['Lesson Number'].unique()
+
+lesson_number = st.selectbox('Choose a lesson', lessons_available)
+
 # Create dropdown for lesson selection
 lesson_number = st.selectbox('Choose a lesson', lessons_df['Lesson Number'].unique())
 
