@@ -25,9 +25,6 @@ else:
 
 lesson_number = st.selectbox('Choose a lesson', lessons_available)
 
-# Create dropdown for lesson selection
-lesson_number = st.selectbox('Choose a lesson', lessons_df['Lesson Number'].unique())
-
 # Fetch the prompt text
 prompt_text = requests.get('https://raw.githubusercontent.com/jamesrothmann/aibooktutor/main/prompt.txt').text
 
