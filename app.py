@@ -25,7 +25,6 @@ def verify_license(product_id, license_key):
     return False
 
 # 2. Create Sidebar Elements
-email = st.sidebar.text_input("Enter your email:")
 license_key = st.sidebar.text_input("Enter your Gumroad license key:", type="password")
 verify_button = st.sidebar.button("Verify License Key")
 st.sidebar.markdown("### [Get a licence key](https://jamesrothmann.gumroad.com/l/zyuxle)")
