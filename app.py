@@ -56,17 +56,17 @@ if prompt := st.chat_input("Let's begin!!"):
     with st.chat_message("assistant"):
         message_placeholder = st.empty()
         full_response = ""
-       for response in openai.ChatCompletion.create(
-        model=st.session_state["openai_model"],
-        messages=[
-            {"role": "system", "content": full_prompt_text}
-        ] + [
-            {"role": "user", "content": "I'm ready to begin"}
-        ] + [
-            {"role": "assistant", "content": "Next up, I'll provide a meticulous summary of the prime concepts encapsulated in the chapter, streamlining complex ideas into clear insights."}
-        ] + [
-            {"role": m["role"], "content": m["content"]} for m in st.session_state.messages
-        ],
+        for response in openai.ChatCompletion.create(
+            model=st.session_state["openai_model"],
+            messages=[
+                {"role": "system", "content": full_prompt_text}
+            ] + [
+                {"role": "user", "content": "I'm ready to begin"}
+            ] + [
+                {"role": "assistant", "content": "Next up, I'll provide a meticulous summary of the prime concepts encapsulated in the chapter, streamlining complex ideas into clear insights."}
+            ] + [
+                {"role": m["role"], "content": m["content"]} for m in st.session_state.messages
+            ],
             stream=True,
             temperature=0,
             max_tokens=2000,
@@ -79,3 +79,4 @@ if prompt := st.chat_input("Let's begin!!"):
             message_placeholder.markdown(full_response + "▌")
         message_placeholder.markdown(full_response)
     st.session_state.messages.append({"role": "assistant", "content": full_response})
+
