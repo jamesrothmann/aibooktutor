@@ -10,20 +10,34 @@ openai.api_key = st.secrets["OPENAI_API_KEY"]
 # Load the lessons from the CSV
 lessons_df = pd.read_csv('https://docs.google.com/spreadsheets/d/e/2PACX-1vT42k3EGPUsfJQ4FWqqwRjMY6KsUm6lRicOVMJ9AmaaEzLL99CDRRYg4tpaRdfoz_biAIvkUnv8v9dC/pub?gid=0&single=true&output=csv')
 
-# 1. Add the Authentication Sidebar
+# 1. Create Sidebar Elements
 email = st.sidebar.text_input("Enter your email:")
-auth_code = st.sidebar.text_input("Enter your authentication code:", type="password")
+license_key = st.sidebar.text_input("Enter your Gumroad license key:", type="password")
+verify_button = st.sidebar.button("Verify License Key")
+st.sidebar.markdown("### [Get a licence key](https://jamesrothmann.gumroad.com/l/zyuxle)")
 
-# 3. Validate the Authentication Code
-authenticated = auth_code in st.secrets.get("VALID_AUTH_CODES", [])
+# 2. Integrate the Gumroad API
+def verify_license(product_id, license_key):
+    endpoint = "https://api.gumroad.com/v2/licenses/verify"
+    data = {
+        "product_id": product_id,
+        "license_key": license_key
+    }
+    response = requests.post(endpoint, data=data)
+    if response.status_code == 200:
+        json_response = response.json()
+        if json_response.get("success"):
+            return True
+    return False
 
-# 2. Limit the Lessons Dropdown
-if not authenticated:
-    lessons_available = lessons_df['Lesson Number'].unique()[:2]  # Show only first 2 lessons
-else:
-    lessons_available = lessons_df['Lesson Number'].unique()
-
-lesson_number = st.selectbox('Choose a lesson', lessons_available)
+if verify_button:
+    product_id = "UDzAb2J6_bbk7V4xH0I5NQ=="
+    if verify_license(product_id, license_key):
+        st.sidebar.markdown("✅ License key verified!")
+        lessons_available = lessons_df['Lesson Number'].unique()
+    else:
+        st.sidebar.markdown("❌ Invalid license key. Please try again or purchase a valid key.")
+        lessons_available = lessons_df['Lesson Number'].unique()[:2]  # Show only first 2 lessons if not authenticated
 
 # Fetch the prompt text
 prompt_text = requests.get('https://raw.githubusercontent.com/jamesrothmann/aibooktutor/main/prompt.txt').text
