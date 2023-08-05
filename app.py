@@ -10,7 +10,21 @@ openai.api_key = st.secrets["OPENAI_API_KEY"]
 # Load the lessons from the CSV
 lessons_df = pd.read_csv('https://docs.google.com/spreadsheets/d/e/2PACX-1vT42k3EGPUsfJQ4FWqqwRjMY6KsUm6lRicOVMJ9AmaaEzLL99CDRRYg4tpaRdfoz_biAIvkUnv8v9dC/pub?gid=0&single=true&output=csv')
 
-# 1. Create Sidebar Elements
+# 1. Define the verify_license function
+def verify_license(product_id, license_key):
+    endpoint = "https://api.gumroad.com/v2/licenses/verify"
+    data = {
+        "product_id": product_id,
+        "license_key": license_key
+    }
+    response = requests.post(endpoint, data=data)
+    if response.status_code == 200:
+        json_response = response.json()
+        if json_response.get("success"):
+            return True
+    return False
+
+# 2. Create Sidebar Elements
 email = st.sidebar.text_input("Enter your email:")
 license_key = st.sidebar.text_input("Enter your Gumroad license key:", type="password")
 verify_button = st.sidebar.button("Verify License Key")
@@ -18,7 +32,7 @@ st.sidebar.markdown("### [Get a licence key](https://jamesrothmann.gumroad.com/l
 
 lessons_available = lessons_df['Lesson Number'].unique()[:2]  # Default to first 2 lessons
 
-# 2. Integrate the Gumroad API and Verify License
+# 3. Integrate the Gumroad API and Verify License
 if verify_button:
     product_id = "UDzAb2J6_bbk7V4xH0I5NQ=="
     if verify_license(product_id, license_key):
@@ -27,11 +41,13 @@ if verify_button:
     else:
         st.sidebar.markdown("❌ Invalid license key. Please try again or purchase a valid key.")
 
-# 3. Define the lesson_number dropdown
+# 4. Define the lesson_number dropdown
 lesson_number = st.selectbox('Choose a lesson', lessons_available)
 
-# 4. Access lesson_material
+# 5. Access lesson_material
 lesson_material = lessons_df.loc[lessons_df['Lesson Number'] == lesson_number, 'Lesson Material'].values[0]
+
+
 
 # Fetch the prompt text
 prompt_text = requests.get('https://raw.githubusercontent.com/jamesrothmann/aibooktutor/main/prompt.txt').text
