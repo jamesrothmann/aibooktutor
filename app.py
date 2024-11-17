@@ -2,6 +2,10 @@ import openai
 import streamlit as st
 import pandas as pd
 import requests
+from openai import OpenAI
+
+# Initialize OpenAI client
+client = OpenAI()
 
 st.title("Digital Book Tutor")
 
@@ -46,8 +50,6 @@ lesson_number = st.selectbox('Choose a lesson', lessons_available)
 # 5. Access lesson_material
 lesson_material = lessons_df.loc[lessons_df['Lesson Number'] == lesson_number, 'Lesson Material'].values[0]
 
-
-
 # Fetch the prompt text
 prompt_text = requests.get('https://raw.githubusercontent.com/jamesrothmann/aibooktutor/main/prompt.txt').text
 
@@ -59,15 +61,17 @@ full_prompt_text = f"{prompt_text} {lesson_material}"
 
 # Continue with the chat interface
 if "openai_model" not in st.session_state:
-    st.session_state["openai_model"] = "gpt-3.5-turbo-16k"
+    st.session_state["openai_model"] = "gpt-4o-mini"
 
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
+# Display previous messages
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
+# Handle user input
 if prompt := st.chat_input("Let's begin!!"):
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
@@ -76,27 +80,32 @@ if prompt := st.chat_input("Let's begin!!"):
     with st.chat_message("assistant"):
         message_placeholder = st.empty()
         full_response = ""
-        for response in openai.ChatCompletion.create(
-            model=st.session_state["openai_model"],
-            messages=[
-                {"role": "system", "content": full_prompt_text}
-            ] + [
-                {"role": "user", "content": "I'm ready to begin"}
-            ] + [
-                {"role": "assistant", "content": "Next up, I'll provide a meticulous summary of the prime concepts encapsulated in the chapter, streamlining complex ideas into clear insights."}
-            ] + [
-                {"role": m["role"], "content": m["content"]} for m in st.session_state.messages
-            ],
-            stream=True,
-            temperature=0,
-            max_tokens=2000,
-            n=1,
-            stop=None,
-            frequency_penalty=0,
-            presence_penalty=0
-        ):
-            full_response += response.choices[0].delta.get("content", "")
-            message_placeholder.markdown(full_response + "▌")
-        message_placeholder.markdown(full_response)
-    st.session_state.messages.append({"role": "assistant", "content": full_response})
 
+        # New API call using OpenAI client
+        try:
+            response = client.chat.completions.create(
+                model=st.session_state["openai_model"],
+                messages=[
+                    {"role": "system", "content": full_prompt_text},
+                    {"role": "user", "content": "I'm ready to begin"},
+                    {"role": "assistant", "content": "Next up, I'll provide a meticulous summary of the prime concepts encapsulated in the chapter, streamlining complex ideas into clear insights."}
+                ] + [
+                    {"role": m["role"], "content": m["content"]} for m in st.session_state.messages
+                ],
+                temperature=0,
+                max_tokens=2000,
+                top_p=1,
+                frequency_penalty=0,
+                presence_penalty=0,
+                response_format={"type": "text"}
+            )
+
+            # Process response content
+            full_response = response['choices'][0]['message']['content']
+            message_placeholder.markdown(full_response)
+
+        except Exception as e:
+            message_placeholder.markdown(f"⚠️ Error: {str(e)}")
+
+    # Append assistant response to the session state
+    st.session_state.messages.append({"role": "assistant", "content": full_response})
